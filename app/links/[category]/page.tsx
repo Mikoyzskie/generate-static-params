@@ -1,6 +1,5 @@
-
-import getCategory from "@/lib/getCategory"
-import getSubcategories from "@/lib/getSubcategories";
+import { getCategory } from "@/lib/getCategories"
+import { getSubcategories } from "@/lib/getSubcategories";
 import { notFound } from "next/navigation"
 import Link from "next/link"
 
@@ -12,29 +11,14 @@ type Params = {
     }
 }
 
-export async function generateMetadata({ params: { category } }: Params) {
+async function checkCategory(category: string) {
     const categoryDetails = await getCategory(category.split('-').join(' '))
-    const catObject = categoryDetails.data[0]
-
-    if (!catObject) {
-        return {
-            title: '404',
-            description: 'Page not found'
-        }
-    }
-
-    return {
-        title: catObject.Name + "| Zanda Architectural Hardware",
-        description: catObject.Description
-        // image: categoryData.Image,
-        // url: `https://www.linksfordevs.com/category/${category}`
-    }
+    return categoryDetails.data[0]
 }
 
 export default async function CategoryPage({ params: { category } }: Params) {
 
-    const categoryDetails = await getCategory(category.split('-').join(' '))
-    const catObject = categoryDetails.data[0]
+    const catObject = await checkCategory(category)
 
     if (!catObject) return notFound()
 

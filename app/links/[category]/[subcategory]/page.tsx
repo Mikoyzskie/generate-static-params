@@ -1,14 +1,10 @@
-import getCategory from "@/lib/getCategory"
-import getSubcategory from "@/lib/getSubcategory"
-import { fetchSubcategories } from "@/lib/fetchParamSub"
-import fetchSubByParent from "@/lib/fetchSubByParent"
-
+import { getCategory } from "@/lib/getCategories"
+import { getSubcategory, fetchSubByParent } from "@/lib/getSubcategories"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 
 const slugify = require('slugify');
 const unslug = (word: string) => word.split('-').join(' ')
-
 
 export default async function SubPage({
     params,
@@ -18,7 +14,6 @@ export default async function SubPage({
 
     const categoryDetails = await getCategory(unslug(params.category))
     const catObject = categoryDetails.data[0]
-
     if (!catObject) return notFound()
 
     let subList = await Promise.all(catObject.Sub_Categories.map(async (sub: string) => {
@@ -46,7 +41,7 @@ export default async function SubPage({
                 products.data.map((prod: any) => (
                     <Link
                         key={prod.id}
-                        href={`/links/${params.category}/${params.subcategory}/${slugify(prod.Name, { lower: true })}`}
+                        href={`/links/${params.category}/${params.subcategory}/${slugify(prod.Name, { lower: true })}/${prod.id.toLowerCase()}`}
                     >
                         {prod.Name}
                     </Link>

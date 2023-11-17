@@ -1,5 +1,7 @@
 import { getCategory } from "@/lib/getCategories"
-import { getSubcategory, fetchSubcategories, fetchSubByName } from "@/lib/getSubcategories"
+import { getSubcategory, fetchSubByName } from "@/lib/getSubcategories"
+import { getProduct, getProducts } from "@/lib/getProducts"
+
 
 const slugify = require('slugify');
 const unslug = (word: string) => word.split('-').join(' ')
@@ -8,10 +10,12 @@ type Params = {
     params: {
         category: string
         subcategory: string
+        product: string
+        id: string
     }
 }
 
-export async function generateMetadata({ params: { category, subcategory } }: Params) {
+export async function generateMetadata({ params: { category, subcategory, product, id } }: Params) {
 
     const categoryDetails = await getCategory(unslug(category))
     const catObject = categoryDetails.data[0]
@@ -37,11 +41,31 @@ export async function generateMetadata({ params: { category, subcategory } }: Pa
         }
     }
 
-    const subcats = await fetchSubByName(unslug(subcategory))
+    const productSub = await fetchSubByName(unslug(subcategory))
+    const products = await getProducts(productSub.data[0].id)
+    const fetchProduct = await getProduct(id)
+
+    if (!fetchProduct) {
+        return {
+            title: '404',
+            description: 'Page not found'
+        }
+    }
+
+    const productList = products.data.map((prod: any) => prod.id)
+
+    if (!productList.includes(fetchProduct.data.id)) {
+        return {
+            title: '404',
+            description: 'Page not found'
+        }
+    }
+
+
 
     return {
-        title: unslug(subcategory.replace(/\b\w/g, (char) => char.toUpperCase())) + " | Zanda Architectural Hardware",
-        description: subcats.data[0].Description
+        title: unslug(product.replace(/\b\w/g, (char) => char.toUpperCase())) + " | Zanda Architectural Hardware",
+        description: unslug(product.replace(/\b\w/g, (char) => char.toUpperCase()))
     }
 }
 
@@ -55,18 +79,4 @@ export default function Layout({
             {children}
         </>
     )
-}
-
-export async function generateStaticParams({
-    params: { category },
-}: {
-    params: { category: string }
-}) {
-
-    const subtest = await fetchSubcategories(category);
-    // console.log(subtest);
-
-    return subtest.map((item) => ({
-        subcategory: slugify(item, { lower: true })
-    }))
 }

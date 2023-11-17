@@ -1,5 +1,31 @@
+
+import { getCategories, getCategory } from "@/lib/getCategories"
+
 const slugify = require('slugify');
-import getCategories from "@/lib/getCategories"
+
+type Params = {
+    params: {
+        category: string
+    }
+}
+
+export async function generateMetadata({ params: { category } }: Params) {
+    const categoryDetails = await getCategory(category.split('-').join(' '))
+    const catObject = categoryDetails.data[0]
+
+    if (!catObject) {
+        return {
+            title: '404',
+            description: 'Page not found'
+        }
+    }
+
+    return {
+        title: catObject.Name + " | Zanda Architectural Hardware",
+        description: catObject.Description
+    }
+}
+
 
 export default function Layout({
     children,
@@ -7,12 +33,9 @@ export default function Layout({
     children: React.ReactNode
 }) {
     return (
-        <div>
-            <h1>Layout</h1>
-            <div>
-                {children}
-            </div>
-        </div>
+        <>
+            {children}
+        </>
     )
 }
 

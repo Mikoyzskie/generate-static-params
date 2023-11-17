@@ -1,4 +1,4 @@
-import getCategories from "@/lib/getCategories"
+import { getCategories } from "@/lib/getCategories"
 import Link from "next/link"
 
 
