@@ -37,7 +37,7 @@ export default async function SubPage({
 
     return (
         <div className="flex flex-col">
-            {
+            {/* {
                 products.data.map((prod: any) => (
                     <Link
                         key={prod.id}
@@ -46,7 +46,7 @@ export default async function SubPage({
                         {prod.Name}
                     </Link>
                 ))
-            }
+            } */}
         </div>
     )
 }

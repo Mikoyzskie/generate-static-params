@@ -61,8 +61,6 @@ export async function generateMetadata({ params: { category, subcategory, produc
         }
     }
 
-
-
     return {
         title: unslug(product.replace(/\b\w/g, (char) => char.toUpperCase())) + " | Zanda Architectural Hardware",
         description: unslug(product.replace(/\b\w/g, (char) => char.toUpperCase()))
@@ -70,7 +68,7 @@ export async function generateMetadata({ params: { category, subcategory, produc
 }
 
 export default function Layout({
-    children,
+    children
 }: {
     children: React.ReactNode
 }) {
@@ -79,4 +77,20 @@ export default function Layout({
             {children}
         </>
     )
+}
+
+export async function generateStaticParams({
+    params: { subcategory },
+}: {
+    params: { subcategory: string }
+}) {
+
+    const productSub = await fetchSubByName(unslug(subcategory))
+    const products = await getProducts(productSub.data[0].id)
+
+
+    return products.data.map((item: any) => ({
+        product: slugify(item.Name, { lower: true }),
+        id: item.id,
+    }))
 }
